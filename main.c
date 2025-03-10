@@ -3,12 +3,16 @@
 #include "history.h"
 
 int main(void) {
+    
     HISTORY *historique = malloc(sizeof(HISTORY));
     historique->sommet = NULL;
+    
     HISTORY *precedent = malloc(sizeof(HISTORY));
     precedent->sommet = NULL;
+    
     HISTORY *suivant = malloc(sizeof(HISTORY));
     suivant->sommet = NULL;
+    
     int choix;
 
     do {
@@ -56,10 +60,11 @@ int main(void) {
             case 8:
                 aller_en_avant(historique,precedent,suivant);
                 break;
-            case 10:
-                initialiser_file(mafile);
-                break;
             case 9:
+            printf("CAS 9 ");
+            //initialiser_file(mafile);
+                break;
+            case 10:
                 printf("Au revoir !\n");
                 break;
             default:
