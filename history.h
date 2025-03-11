@@ -1,30 +1,49 @@
-#ifndef HISTORY_H
-#define HISTORY_H
+// Created by vfalc on 22/02/2025.
+//
 
-#define MAX 10
+#ifndef TP_NAVIGATION_HISTORY_H
+#define TP_NAVIGATION_HISTORY_H
 
-typedef struct {
-    char* historique[MAX];
-    int top;
-} HISTORY;
 
-typedef struct {
-    char* historique[MAX];
-    int front, rear;
+typedef struct Page {
+    char * url; //Url de la page
+    struct Page *previous; //L'adresse de la page précédente
+} PAGE;
+
+typedef struct History {
+    struct Page* sommet;
+}HISTORY;
+
+typedef struct FilePage {
+    char* url;             // URL de la page
+    struct FilePage* next; // Pointeur vers la page suivante
+} FILEPAGE;
+
+typedef struct FileAttente{
+    FILEPAGE * debut;
+    FILEPAGE * fin;
 } FILEATTENTE;
 
-// Fonction pile
-void initialiserPile(HISTORY* h);
-void empiler(HISTORY* h, char* url);
-void depiler(HISTORY* h);
-void afficherPile(HISTORY* h);
-int estVidePile(HISTORY* h);
+void initialiser(HISTORY *h,HISTORY *precedent);
+void afficher_historique(HISTORY *h);
+void empiler(HISTORY *h);
+void depiler(HISTORY *h);
+void sauvegarder_historique(HISTORY * h, char*);
+void charger_historique(HISTORY * h , char * );
+void revenir_en_arriere(HISTORY * h , HISTORY *precedent, HISTORY *suivant);
+void aller_en_avant(HISTORY *h , HISTORY *precedent, HISTORY *suivant );
+void initialiser_file(FILEATTENTE *f);
 
-// Fonction file
-void initialiserFile(FILEATTENTE* f);
-void enfiler(FILEATTENTE* f, char* url);
-void defiler(FILEATTENTE* f);
-void afficherFile(FILEATTENTE* f);
-int estVideFile(FILEATTENTE* f);
 
-#endif
+//############# File ###############
+
+void initialiserFile(FILEATTENTE *f);
+void ajouterFile(FILEATTENTE *f, char * );
+void retirerFile(FILEATTENTE *f);
+void afficherFile(FILEATTENTE *f);
+void estVideFile(FILEATTENTE* f);
+
+
+
+
+#endif //TP_NAVIGATION_HISTORY_H

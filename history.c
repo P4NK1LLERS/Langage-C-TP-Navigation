@@ -1,85 +1,244 @@
+// 
+// Created by vfalc on 22/02/2025.
+// Stylisé avec des emojis pour une meilleure lisibilité et organisation
+//
+
 #include <stdio.h>
-#include <stdlib.h>
 #include "history.h"
+#include <stdlib.h>
+#include <stdbool.h>
+#include "string.h"
 
-// Pile - Historique
-void initialiserPile(HISTORY* h) {
-    h->top = -1;
-}
+// ----------📜 Initialisation de l'historique ----------
 
-void empiler(HISTORY* h, char* url) {
-    if (h->top < MAX - 1) {
-        h->top++;
-        h->historique[h->top] = url;
-        printf("Page added to history: %s\n", url);
-    } else {
-        printf("Stack is full\n");
+void initialiser(HISTORY *h, HISTORY *precedent) {
+    h->sommet = NULL;
+    int n;
+    printf("📚 Combien de pages voulez-vous ajouter ? : ");
+    scanf("%d", &n);
+
+    for (int i = 1; i < n + 1; i++) {
+        PAGE *new = malloc(sizeof(PAGE));
+        new->previous = NULL;
+        char *valeur = malloc(sizeof(char) * 50);
+        printf("##### Page [%d] #####\n", i);
+        printf("🔗 Entrez l'URL de la page : ");
+        scanf("%s", valeur);
+        new->url = valeur;
+        if (h->sommet != NULL) {
+            PAGE *newp = malloc(sizeof(PAGE));
+            newp->previous = NULL;
+            newp->url = h->sommet->url;
+            if (precedent->sommet != NULL)
+                newp->previous = precedent->sommet;
+            precedent->sommet = newp;
+            new->previous = h->sommet;
+        }
+        h->sommet = new;
     }
 }
 
-void depiler(HISTORY* h) {
-    if (h->top == -1) {
-        printf("Stack is empty\n");
-    } else {
-        printf("Deleted page: %s\n", h->historique[h->top]);
-        h->top--;
-    }
-}
+// ----------📖 Affichage de l'historique ----------
 
-void afficherPile(HISTORY* h) {
-    if (h->top == -1) {
-        printf("No pages in history\n");
+void afficher_historique(HISTORY *h) {
+    printf("\n######### 📜 Liste des pages visitées 📜 #########\n");
+
+    if (h->sommet == NULL) {
+        printf("❌ L'historique est vide.");
     } else {
-        printf("History:\n");
-        for (int i = h->top; i >= 0; i--) {
-            printf("%s\n", h->historique[i]);
+        PAGE *temp = h->sommet;
+        while (temp != NULL) {
+            printf("🔗 %s\n", temp->url);
+            temp = temp->previous;
         }
     }
+
+    printf("\n###############################################\n");
 }
 
-int estVidePile(HISTORY* h) {
-    return (h->top == -1);
+// ----------📥 Empiler une nouvelle page ----------
+
+void empiler(HISTORY *h) {
+    char *valeur = malloc(sizeof(char) * 50);
+    PAGE *new = malloc(sizeof(PAGE));
+    new->previous = NULL;
+    printf("🌐 Quelle nouvelle page souhaitez-vous visiter ? ");
+    scanf("%s", valeur);
+    new->url = valeur;
+    if (h->sommet != NULL) {
+        new->previous = h->sommet;
+    }
+    h->sommet = new;
 }
 
-// File - Historique
-void initialiserFile(FILEATTENTE* f) {
-    f->front = f->rear = -1;
-}
+// ----------📤 Dépiler une page ----------
 
-void enfiler(FILEATTENTE* f, char* url) {
-    if (f->rear == MAX - 1) {
-        printf("Queue is full\n");
-    } else {
-        if (f->front == -1) f->front = 0;
-        f->rear++;
-        f->historique[f->rear] = url;
-        printf("Page added to history: %s\n", url);
+void depiler(HISTORY *h) {
+    if (h->sommet != NULL) {
+        PAGE *temp = h->sommet;
+        h->sommet = h->sommet->previous;
+        free(temp);
+        printf("✅ La page récente a été supprimée avec succès.\n");
     }
 }
 
-void defiler(FILEATTENTE* f) {
-    if (f->front == -1) {
-        printf("Queue is empty\n");
-    } else {
-        printf("Deleted page: %s\n", f->historique[f->front]);
-        f->front++;
-        if (f->front > f->rear) {
-            f->front = f->rear = -1;
+// ----------💾 Sauvegarder l'historique ----------
+
+void sauvegarder_historique(HISTORY *h, char *historique) {
+    FILE *file = fopen("historique.txt", "w+");
+
+    if (file == NULL) {
+        printf("❌ Erreur lors de l'ouverture du fichier.\n");
+        return;
+    }
+    PAGE *temp = h->sommet;
+    while (temp != NULL) {
+        fprintf(file, "%s\n", temp->url);
+        temp = temp->previous;
+    }
+    fclose(file);
+    printf("💾 L'historique a été sauvegardé avec succès.\n");
+}
+
+// ----------📂 Charger l'historique ----------
+
+void charger_historique(HISTORY *h, char *historique) {
+    FILE *file = fopen("historique.txt", "r");
+    if (file == NULL) return;
+
+    HISTORY *tempPile = malloc(sizeof(HISTORY));
+    tempPile->sommet = NULL;
+
+    while (!feof(file)) {
+        char *ligne = malloc(sizeof(char) * 50);
+        if (fgets(ligne, 50, file) != NULL) {
+            ligne[strcspn(ligne, "\n")] = '\0';
+            PAGE *new = malloc(sizeof(PAGE));
+            new->url = ligne;
+            new->previous = tempPile->sommet;
+            tempPile->sommet = new;
         }
     }
+    fclose(file);
+
+    while (tempPile->sommet != NULL) {
+        PAGE *new = malloc(sizeof(PAGE));
+        new->url = tempPile->sommet->url;
+        new->previous = h->sommet;
+        h->sommet = new;
+
+        PAGE *toFree = tempPile->sommet;
+        tempPile->sommet = tempPile->sommet->previous;
+        free(toFree);
+    }
+
+    free(tempPile);
+    printf("📂 L'historique a été chargé avec succès.\n");
 }
 
-void afficherFile(FILEATTENTE* f) {
-    if (f->front == -1) {
-        printf("No pages in history\n");
+// ----------🔙 Revenir en arrière ----------
+
+void revenir_en_arriere(HISTORY *h, HISTORY *precedent, HISTORY *suivant) {
+    if (h->sommet == NULL || h->sommet->previous == NULL) {
+        printf("❌ Impossible de revenir en arrière.\n");
+        return;
+    }
+    PAGE *newpr = malloc(sizeof(PAGE));
+
+    newpr->previous = NULL;
+    newpr->url = h->sommet->url;
+    if (suivant->sommet != NULL) {
+        newpr->previous = suivant->sommet;
+    }
+
+    suivant->sommet = newpr;
+
+    PAGE *current = precedent->sommet;
+    precedent->sommet = precedent->sommet->previous;
+    current->previous = h->sommet;
+    h->sommet = current;
+
+    printf("↩ Retour à la page : %s\n", h->sommet->url);
+}
+
+// ----------🔜 Aller en avant ----------
+
+void aller_en_avant(HISTORY *h, HISTORY *precedent, HISTORY *suivant) {
+    if (h->sommet == NULL || h->sommet->previous == NULL) {
+        printf("❌ Impossible d'aller à la page suivante.\n");
+        return;
+    }
+    PAGE *newpr = malloc(sizeof(PAGE));
+
+    newpr->previous = NULL;
+    newpr->url = h->sommet->url;
+    if (precedent->sommet != NULL) {
+        newpr->previous = precedent->sommet;
+    }
+
+    precedent->sommet = newpr;
+
+    PAGE *current = suivant->sommet;
+    suivant->sommet = suivant->sommet->previous;
+    current->previous = h->sommet;
+    h->sommet = current;
+
+    printf("🔜 Retour à la page : %s\n", h->sommet->url);
+}
+
+// ----------------------- 📋 File FIFO ------------------------------
+
+void initialiserFile(FILEATTENTE *f) {
+    f->debut = NULL;
+    f->fin = NULL;
+}
+
+void ajouterFile(FILEATTENTE *f, char *url) {
+    FILEPAGE *nouvellePage = malloc(sizeof(FILEPAGE));
+
+    nouvellePage->url = malloc(strlen(url) + 1);
+    strcpy(nouvellePage->url, url);
+
+    nouvellePage->next = NULL;
+
+    if (f->fin == NULL) {
+        f->debut = nouvellePage;
+        f->fin = nouvellePage;
     } else {
-        printf("History:\n");
-        for (int i = f->front; i <= f->rear; i++) {
-            printf("%s\n", f->historique[i]);
+        f->fin->next = nouvellePage;
+        f->fin = nouvellePage;
+    }
+
+    printf("📑 Page ajoutée à la file : %s\n", url);
+}
+
+void retirerFile(FILEATTENTE *f) {
+    if (f->debut != NULL) {
+        FILEPAGE *temp = f->debut;
+        f->debut = f->debut->next;
+
+        if (f->debut == NULL) {
+            f->fin = NULL;
         }
+
+        free(temp);
+        printf("❌ La première page a été retirée de la file.\n");
     }
 }
 
-int estVideFile(FILEATTENTE* f) {
-    return (f->front == -1);
+void afficherFile(FILEATTENTE *f) {
+    FILEPAGE *courant = f->debut;
+    while (courant != NULL) {
+        printf("%s -> ", courant->url);
+        courant = courant->next;
+    }
+    printf("NULL\n");
+}
+
+void estVideFile(FILEATTENTE *f) {
+    if (f->debut == NULL) {
+        printf("✅ La file est vide.\n");
+    } else {
+        printf("❌ La file contient des éléments.\n");
+    }
 }
