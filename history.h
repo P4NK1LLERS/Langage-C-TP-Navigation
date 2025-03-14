@@ -44,6 +44,9 @@ void afficherFile(FILEATTENTE *f);
 void estVideFile(FILEATTENTE* f);
 
 
+void afficher_noms_de_domaine(char*);
+
+
 
 
 #endif //TP_NAVIGATION_HISTORY_H

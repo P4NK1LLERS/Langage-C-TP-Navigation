@@ -32,16 +32,17 @@ int main(void) {
                     printf("\033[1;34m ====================================\033[0m\n");
                     printf("\033[1;36m|        📚 MENU PILE 📚            |\033[0m\n");
                     printf("\033[1;34m ====================================\033[0m\n");
-                    printf("| 1. Initialize history             |\n");
-                    printf("| 2. Add a page                     |\n");
-                    printf("| 3. Display history                |\n");
-                    printf("| 4. Remove the most recent page    |\n");
-                    printf("| 5. Save history                   |\n");
-                    printf("| 6. Load history                   |\n");
-                    printf("| 7. Go back to the previous page   |\n");
-                    printf("| 8. Go to the next page            |\n");
-                    printf("| 9. Return to the main menu        |\n");
-                    printf("-------------------------------------\n");
+                    printf("\033[1;34m| 1. Initialize history             |\033[0m\n");
+                    printf("\033[1;34m| 2. Add a page                     |\033[0m\n");
+                    printf("\033[1;34m| 3. Display history                |\033[0m\n");
+                    printf("\033[1;34m| 4. Remove the most recent page    |\033[0m\n");
+                    printf("\033[1;34m| 5. Save history                   |\033[0m\n");
+                    printf("\033[1;34m| 6. Load history                   |\033[0m\n");
+                    printf("\033[1;34m| 7. Go back to the previous page   |\033[0m\n");
+                    printf("\033[1;34m| 8. Go to the next page            |\033[0m\n");
+                    printf("\033[1;34m| 9. Show domain name               |\033[0m\n");
+                    printf("\033[1;34m| 10. Return to the main menu       |\033[0m\n");
+                    printf("\033[1;34m|-------------------------------------\033[0m\n");
                     printf("Your choice: ");
                     scanf("%d", &choixPile);
                     
@@ -72,12 +73,15 @@ int main(void) {
                             aller_en_avant(historique, precedent, suivant);
                             break;
                         case 9:
+                            afficher_noms_de_domaine("historique.txt");
+                            break;
+                        case 10:
                             printf("Retour au menu principal...\n");
                             break;
                         default:
                             printf("\033[1;31mChoix invalide, essayez encore.\033[0m\n");
                     }
-                } while (choixPile != 9);
+                } while (choixPile != 10);
                 break;
 
             case 2:

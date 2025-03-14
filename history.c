@@ -242,3 +242,43 @@ void estVideFile(FILEATTENTE *f) {
         printf("❌ La file contient des éléments.\n");
     }
 }
+
+
+// ----------------------- Partie 5  ------------------------------
+
+void afficher_noms_de_domaine(char *nom_fichier) {
+    FILE *file = fopen(nom_fichier, "r");
+    if (file == NULL) {
+        printf("❌ Erreur : impossible d'ouvrir le fichier %s\n", nom_fichier);
+        return;
+    }
+
+    printf("\n######### 🌍 Liste des noms de domaine 🌍 #########\n");
+
+    char ligne[256];
+    while (fgets(ligne, sizeof(ligne), file)) {
+        ligne[strcspn(ligne, "\n")] = '\0';  // Supprimer le saut de ligne
+
+        // 🔹 Trouver "://" pour ignorer le protocole
+        char *debut = strstr(ligne, "://");
+        debut = (debut) ? debut + 3 : ligne;
+
+        // 🔹 Copier le domaine jusqu'au prochain "/"
+        char *slash = strchr(debut, '/');
+        int len = (slash) ? slash - debut : strlen(debut);
+
+        char domaine[256];
+        strncpy(domaine, debut, len);
+        domaine[len] = '\0';
+
+        // 🔹 Supprimer "www." si présent
+        if (strncmp(domaine, "www.", 4) == 0) {
+            printf("🔹 %s\n", domaine + 4);
+        } else {
+            printf("🔹 %s\n", domaine);
+        }
+    }
+
+    fclose(file);
+    printf("\n###############################################\n");
+}
