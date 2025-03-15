@@ -45,8 +45,10 @@ void estVideFile(FILEATTENTE* f);
 
 
 void afficher_noms_de_domaine(char*);
-
+void afficher_sites_les_plus_visites(char*);
 
 
 
 #endif //TP_NAVIGATION_HISTORY_H
+
+
