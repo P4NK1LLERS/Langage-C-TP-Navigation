@@ -2,8 +2,12 @@
 #include <stdlib.h> // Remplace <malloc.h>
 #include "history.h"
 
+
 int main(void)
 {
+    
+    // Aloccation de la memoire neccesaire pour chaque structure 
+    
     HISTORY *historique = malloc(sizeof(HISTORY));
     historique->sommet = NULL;
 

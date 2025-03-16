@@ -24,6 +24,7 @@ typedef struct FileAttente{
     FILEPAGE * fin;
 } FILEATTENTE;
 
+
 void initialiser(HISTORY *h,HISTORY *precedent);
 void afficher_historique(HISTORY *h);
 void empiler(HISTORY *h);
@@ -33,6 +34,8 @@ void charger_historique(HISTORY * h , char * );
 void revenir_en_arriere(HISTORY * h , HISTORY *precedent, HISTORY *suivant);
 void aller_en_avant(HISTORY *h , HISTORY *precedent, HISTORY *suivant );
 void initialiser_file(FILEATTENTE *f);
+void afficher_noms_de_domaine(char*);
+void afficher_sites_les_plus_visites(char*);
 
 
 //############# File ###############
@@ -44,8 +47,7 @@ void afficherFile(FILEATTENTE *f);
 void estVideFile(FILEATTENTE* f);
 
 
-void afficher_noms_de_domaine(char*);
-void afficher_sites_les_plus_visites(char*);
+
 
 
 

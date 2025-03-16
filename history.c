@@ -2,8 +2,9 @@
 // Created by vfalc on 22/02/2025.
 //
 
-//  formule de compilation : gcc -o main main.c history.c
-// Utilisation de l'IA pour la gestion des couleurs du texte et du curseur
+// Formule de compilation : gcc -o main main.c history.c
+// Utilisation de l'IA pour la gestion des couleurs du texte et du curseur ainsi que pour de l'aide sur la fonction d'affichage de nom de domaine 
+// Tout l'interface graphique à été faite par moi-même à la main. 
 
 
 // ---------- Inclusion des bibliothèques ----------
@@ -13,6 +14,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "string.h"
+
+
 
 // ---------- Initialisation de l'historique ----------
 
@@ -60,6 +63,11 @@ void initialiser(HISTORY *h, HISTORY *precedent)
     printf("\033[1;35m|______________________________________________________|\033[0m\n");
 }
 
+
+
+
+
+
 // ---------- Affichage de l'historique ----------
 
 void afficher_historique(HISTORY *h)
@@ -92,6 +100,12 @@ void afficher_historique(HISTORY *h)
     }
 }
 
+
+
+
+
+
+
 // ---------- Empiler une nouvelle page ----------
 
 void empiler(HISTORY *h)
@@ -109,6 +123,11 @@ void empiler(HISTORY *h)
     }
     h->sommet = new;
 }
+
+
+
+
+
 
 // ---------- Dépiler une page ----------
 
@@ -128,6 +147,12 @@ void depiler(HISTORY *h)
         printf("\033[1;31m❌ Impossible de supprimer car l'historique est vide.\033[0m\n");
     }
 }
+
+
+
+
+
+
 
 // ---------- Sauvegarder l'historique ----------
 
@@ -157,6 +182,11 @@ void sauvegarder_historique(HISTORY *h, char *historique)
     fclose(file); 
     printf("\033[1;32m💾 L'historique a été sauvegardé avec succès.\033[0m\n");
 }
+
+
+
+
+
 
 // ---------- Charger l'historique ----------
 
@@ -199,30 +229,36 @@ void charger_historique(HISTORY *h, char *historique)
     printf("\033[1;33m📂 l'historique a ete charge avec succes.\033[0m\n");
 }
 
+
+
+
+
+
+
 // ---------- Revenir en arrière ----------
 
 void revenir_en_arriere(HISTORY *h, HISTORY *precedent, HISTORY *suivant)
 {
-    if (h->sommet == NULL)
+    if (h->sommet == NULL) // verifier si l'historique est vide
     {
         printf("\033[1;31m❌ L'historique est vide.\033[0m\n");
         return;
     }
-    if (h->sommet->previous == NULL)
+    if (h->sommet->previous == NULL) // verifier si on peut revenir en arriere
     {
         printf("\033[1;31m❌ Impossible de revenir en arrière.\033[0m\n");
         return;
     }
-
-    PAGE *newpr = malloc(sizeof(PAGE));
+ 
+    PAGE *newpr = malloc(sizeof(PAGE)); // allouer de la memoire pour la nouvelle page
     newpr->previous = NULL;
     newpr->url = h->sommet->url;
-    if (suivant->sommet != NULL)
+    if (suivant->sommet != NULL)    // verifier si le sommet de la  page suivante est vide
     {
-        newpr->previous = suivant->sommet;
+        newpr->previous = suivant->sommet; 
     }
 
-    suivant->sommet = newpr;
+    suivant->sommet = newpr;    // maj le sommet de la page suivante
 
     PAGE *current = precedent->sommet;
     precedent->sommet = precedent->sommet->previous;
@@ -232,33 +268,45 @@ void revenir_en_arriere(HISTORY *h, HISTORY *precedent, HISTORY *suivant)
     printf("\033[1;33mRetour à la page : %s\033[0m\n", h->sommet->url);
 }
 
+
+
+
+
+
+
 // ---------- Aller en avant ----------
 
 void aller_en_avant(HISTORY *h, HISTORY *precedent, HISTORY *suivant)
 {
-    if (h->sommet == NULL || h->sommet->previous == NULL)
+    if (h->sommet == NULL || h->sommet->previous == NULL) 
     {
-        printf("\033[1;31m❌ Impossible d'aller à la page suivante.\033[0m\n");
+        printf("\033[1;31m❌ Impossible d'aller à la page suivante.\033[0m\n"); // verifier si on peut aller en avant
         return;
     }
     PAGE *newpr = malloc(sizeof(PAGE));
 
     newpr->previous = NULL;
-    newpr->url = h->sommet->url;
-    if (precedent->sommet != NULL)
+    newpr->url = h->sommet->url; 
+    if (precedent->sommet != NULL) // verifier si le sommet de la page precedente est vide
     {
         newpr->previous = precedent->sommet;
     }
 
     precedent->sommet = newpr;
 
-    PAGE *current = suivant->sommet;
-    suivant->sommet = suivant->sommet->previous;
+    PAGE *current = suivant->sommet; // maj le sommet de la page suivante
+    suivant->sommet = suivant->sommet->previous; // passer a la page suivante
     current->previous = h->sommet;
     h->sommet = current;
 
     printf("\033[1;33mRetour à la page : %s\033[0m\n", h->sommet->url);
 }
+
+
+
+
+
+
 
 // ----------------------- File FIFO ------------------------------
 
@@ -268,74 +316,100 @@ void initialiserFile(FILEATTENTE *f)
     f->fin = NULL;
 }
 
+
+
+
+
+
+
 void ajouterFile(FILEATTENTE *f, char *url)
 {
-    FILEPAGE *nouvellePage = malloc(sizeof(FILEPAGE));
+    FILEPAGE *nouvellePage = malloc(sizeof(FILEPAGE)); // Allouer de la mémoire pour une nouvelle page
 
-    nouvellePage->url = malloc(strlen(url) + 1);
-    strcpy(nouvellePage->url, url);
+    nouvellePage->url = malloc(strlen(url) + 1); // Allouer de la mémoire pour l'URL
+    strcpy(nouvellePage->url, url); // copier l'URL dans la nouvelle page
 
-    nouvellePage->next = NULL;
+    nouvellePage->next = NULL; // nouvelle page est la derniere donc next est null 
 
-    if (f->fin == NULL)
+    if (f->fin == NULL) 
     {
-        f->debut = nouvellePage;
-        f->fin = nouvellePage;
+        f->debut = nouvellePage; // la nouvelle page est le debut de la file
+        f->fin = nouvellePage; // la nouvelle page est aussi la fin de la file
     }
     else
     {
-        f->fin->next = nouvellePage;
-        f->fin = nouvellePage;
+        f->fin->next = nouvellePage; // ajouter à la fin de la page 
+        f->fin = nouvellePage; //maj la fin de la file
     }
 
-    printf("Page ajoutée à la file : %s\n", url);
+    printf("Page ajoutée à la file : %s\n", url); 
 }
+ 
 
-void retirerFile(FILEATTENTE *f)
+
+
+
+
+void retirerFile(FILEATTENTE *f) 
 {
-    if (f->debut != NULL)
+    if (f->debut != NULL)  // si debut de file est different de Null alors : 
     {
-        FILEPAGE *temp = f->debut;
-        f->debut = f->debut->next;
+        FILEPAGE *temp = f->debut; // on attribue à la page temporaire la tete (debut) de la file 
+        f->debut = f->debut->next;  
 
-        if (f->debut == NULL)
+        if (f->debut == NULL) // si il n'y pas de debut alors il n'y a pas de fin 
         {
             f->fin = NULL;
         }
 
-        free(temp);
+        free(temp); // on libere la memoire prise par la page temporaire 
         printf("\033[1;31m❌ La première page a été retirée de la file.\033[0m\n");
     }
 }
 
+
+
+
+
+
 void afficherFile(FILEATTENTE *f)
 {
-    FILEPAGE *courant = f->debut;
-    while (courant != NULL)
+    FILEPAGE *courant = f->debut; // on attribue à courant la valeur de debut 
+    while (courant != NULL) // tant que courant n'est pas NUll 
     {
-        printf("%s -> ", courant->url);
-        courant = courant->next;
+        printf("%s -> ", courant->url); // On affiche l'url de la page courante 
+        courant = courant->next; // et on attribue à courant la page suivante à courant pour pouvoir afficher toutes les pages 
     }
-    printf("NULL\n");
+    printf("NULL\n"); 
 }
+
+
+
+
+
 
 void estVideFile(FILEATTENTE *f)
 {
-    if (f->debut == NULL)
+    if (f->debut == NULL) // Si le debut est Null alors la fil eest vide 
     {
-        printf("✅ La file est vide.\n");
+        printf("✅ La file est vide.\n"); // on affiche le message correspondant 
     }
     else
     {
-        printf("\033[1;31m❌ La file contient des éléments.\033[0m\n");
+        printf("\033[1;31m❌ La file contient des éléments.\033[0m\n"); // on affiche le message correspondant 
     }
 }
+
+
+
+
+
 
 // ----------------------- Partie 5  - 1 ------------------------------
 
 void afficher_noms_de_domaine(char *nom_fichier)
 {
-    FILE *file = fopen(nom_fichier, "r");
+    FILE *file = fopen(nom_fichier, "r"); // on ouvre le fichier et on donne la permission "r" pour lire à l'interieur
     if (file == NULL)
     {
         printf("\033[1;31m❌ Erreur : impossible d'ouvrir le fichier %s\033[0m\n", nom_fichier);
@@ -347,6 +421,7 @@ void afficher_noms_de_domaine(char *nom_fichier)
     printf("\033[1;33m======================================\033[0m\n");
 
     char ligne[256];
+    // Aide avec Chatgpt // 
     while (fgets(ligne, sizeof(ligne), file))
     {
         ligne[strcspn(ligne, "\n")] = '\0'; // Supprimer le saut de ligne
@@ -377,7 +452,7 @@ void afficher_noms_de_domaine(char *nom_fichier)
         {
             printf("\033[1;33m| %s\033[0m\n", domaine);
             // Fait avec Chat Gpt //
-            rintf("\033[%dC", 37); // Déplacer le curseur à la colonne correcte
+            printf("\033[%dC", 37); // Déplacer le curseur à la colonne correcte
             printf("\033[A");       // Remonter d'une ligne
             printf("\033[1;33m|\n");
             // /////////////// //
@@ -388,79 +463,85 @@ void afficher_noms_de_domaine(char *nom_fichier)
     printf("\033[1;33m|____________________________________|\033[0m\n");
 }
 
+
+
+
+
+
 // ----------------------- Partie 5 - 2  ------------------------------
 
 void afficher_sites_les_plus_visites(char *nom_fichier)
 {
-    FILE *file = fopen(nom_fichier, "r");
+    FILE *file = fopen(nom_fichier, "r"); // lire dans le fichier mis en paramètre
     if (file == NULL)
     {
         printf("\033[1;31m❌ Erreur : impossible d'ouvrir le fichier %s\033[0m\n", nom_fichier);
         return;
     }
 
-    HISTORY *historique = malloc(sizeof(HISTORY));
-    historique->sommet = NULL;
+    HISTORY *historique = malloc(sizeof(HISTORY)); // Allouer l'espace memoire pour creer une pile historique 
+    historique->sommet = NULL; // sommet de l'historique est nul (pile vide)
 
-    while (!feof(file))
+    while (!feof(file)) // lire le fichier jusqu'à la fin de celui-ci 
     {
-        char *ligne = malloc(sizeof(char) * 50);
+        char *ligne = malloc(sizeof(char) * 50); // allouer un espace mémoire pour chaque ligne du fichier 
         if (fgets(ligne, 50, file) != NULL)
         {
-            ligne[strcspn(ligne, "\n")] = '\0';
-            PAGE *new = malloc(sizeof(PAGE));
-            new->url = ligne;
+            ligne[strcspn(ligne, "\n")] = '\0'; // ajouter un retour à la ligne apres chque ligne du fichier 
+            PAGE *new = malloc(sizeof(PAGE)); 
+            new->url = ligne; // l'url de la nouvelle page correspond à la lgine recuperer dans le fichier 
             new->previous = historique->sommet;
-            historique->sommet = new;
+            historique->sommet = new; // on attribue à la nouvelle page , le sommet de historique 
         }
     }
 
-    fclose(file);
+    fclose(file); // fermeture du fichier 
 
     // ---------- Trier et afficher les sites les plus visités ----------
 
-    // Compter les occurrences des URLs
-    typedef struct URLCount
+   // Création d'une structure pour compter le nombre d'occurence d'un Url 
+    typedef struct URLCount 
     {
-        char *url;
-        int count;
-        struct URLCount *next;
+        char *url; //un Url 
+        int count; // et son nombre d'occurence
+        struct URLCount *next; 
     } URLCount;
 
-    URLCount *head = NULL;
+    
+    URLCount *head = NULL; 
 
-    PAGE *current = historique->sommet;
-    while (current != NULL)
+    PAGE *current = historique->sommet; // on commence par attibuer à la page actuelle la valeur du sommet de historique 
+    while (current != NULL) // on verifie que la page actuelle ne soit pas null pouir savoir si l'historique est vide ou non 
     {
-        URLCount *uc = head;
-        while (uc != NULL && strcmp(uc->url, current->url) != 0)
+        URLCount *uc = head; 
+        while (uc != NULL && strcmp(uc->url, current->url) != 0) // tant que uc n'est pas null et que les deux URL correspondent  
         {
-            uc = uc->next;
+            uc = uc->next; // on passe au suivant 
         }
-        if (uc == NULL)
+        if (uc == NULL) // si l'url n'a pas encore eté trouvée 
         {
-            uc = malloc(sizeof(URLCount));
+            uc = malloc(sizeof(URLCount)); // on alloe de la memoire 
             uc->url = current->url;
-            uc->count = 1;
-            uc->next = head;
+            uc->count = 1; // on initialise à 1 le compteur d'url 
+            uc->next = head; // On change l'emplacement de la tete 
             head = uc;
         }
         else
         {
-            uc->count++;
+            uc->count++; // si d'autre url sont identique on ajoute 1 à leur compteur 
         }
         current = current->previous;
     }
 
-    // Trier les URLs par nombre de visites (tri par insertion)
-    URLCount *sorted = NULL;
+    // Trier le nombre d'occurences de chaque adresse internet 
+    URLCount *sorted = NULL;  // Pointeur vers la liste triée
     URLCount *uc = head;
     while (uc != NULL)
     {
-        URLCount *next = uc->next;
+        URLCount *next = uc->next; // Sauvegarde du prochain élément avant modification
         if (sorted == NULL || sorted->count < uc->count)
         {
-            uc->next = sorted;
+            uc->next = sorted; // Insère l'élément en tête si la liste triée est vide ou si l'élément est le plus grand
             sorted = uc;
         }
         else
@@ -468,12 +549,12 @@ void afficher_sites_les_plus_visites(char *nom_fichier)
             URLCount *current = sorted;
             while (current->next != NULL && current->next->count >= uc->count)
             {
-                current = current->next;
+                current = current->next; // Avance dans la liste jusqu'à trouver la bonne position
             }
-            uc->next = current->next;
+            uc->next = current->next; // Insère l'élément après "current"
             current->next = uc;
         }
-        uc = next;
+        uc = next; // Passe à l'élément suivant dans la liste initiale
     }
 
     printf("\033[1;35m=========================================\033[0m\n");
@@ -504,11 +585,4 @@ void afficher_sites_les_plus_visites(char *nom_fichier)
     }
     printf("\033[1;35m|_______________________________________|\033[0m\n");
 
-    // Libérer la mémoire
-    while (sorted != NULL)
-    {
-        URLCount *temp = sorted;
-        sorted = sorted->next;
-        free(temp);
-    }
 }
