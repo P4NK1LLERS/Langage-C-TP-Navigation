@@ -102,16 +102,17 @@ int main(void)
         case 2:
             do
             {
-                printf("\033[1;34m ======================================\033[0m\n");
-                printf("\033[1;36m           📂 MENU FILE 📂            \033[0m\n");
-                printf("\033[1;34m ======================================\033[0m\n");
-                printf("\033[1;34m | 1. 🛠️ Initialiser la file           |\033[0m\n");
-                printf("\033[1;34m | 2. ➕ Ajouter une page à la file   |\033[0m\n");
-                printf("\033[1;34m | 3. 📜 Afficher la file             |\033[0m\n");
-                printf("\033[1;34m | 4. ❌ Retirer la page récente      |\033[0m\n");
-                printf("\033[1;34m | 5. 📭 Vérifier si la file est vide |\033[0m\n");
-                printf("\033[1;34m | 6. 🔙 Retour au menu principal     |\033[0m\n");
-                printf("\033[1;34m ======================================\033[0m\n");
+                printf("\033[1;34m======================================\033[0m\n");
+                printf("\033[1;36m|          📂 MENU FILE 📂           |\033[0m\n");
+                printf("\033[1;34m======================================\033[0m\n");
+                printf("\033[1;34m| 1. Initialiser la file             |\033[0m\n");
+                printf("\033[1;34m| 2. Ajouter une page à la file      |\033[0m\n");
+                printf("\033[1;34m| 3. Afficher la file                |\033[0m\n");
+                printf("\033[1;34m| 4. Retirer la page récente         |\033[0m\n");
+                printf("\033[1;34m| 5. Vérifier si la file est vide    |\033[0m\n");
+                printf("\033[1;34m| 6. Basculer dans l'historique      |\033[0m\n");
+                printf("\033[1;34m| 7. Retour au menu principal        |\033[0m\n");
+                printf("\033[1;34m|____________________________________|\033[0m\n");
                 printf("Votre choix: ");
                 scanf("%d", &choixFile);
 
@@ -136,17 +137,20 @@ int main(void)
                     estVideFile(&mafile);
                     break;
                 case 6:
+                    basculerFileVersHistorique(&mafile, historique);
+                    break;
+                case 7:
                     printf("Retour au menu principal...\n");
                     break;
                 default:
                     printf("\033[1;31mChoix invalide, essayez encore.\033[0m\n");
                 }
-            } while (choixFile != 6);
+            } while (choixFile != 7);
             break;
 
         default:
             printf("\033[1;31mChoix invalide, essayez encore.\033[0m\n");
         }
-    } while (choixPile != 2);
+    } while (1);
     return 0;
 }

@@ -45,7 +45,7 @@ void ajouterFile(FILEATTENTE *f, char * );
 void retirerFile(FILEATTENTE *f);
 void afficherFile(FILEATTENTE *f);
 void estVideFile(FILEATTENTE* f);
-
+void basculerFileVersHistorique(FILEATTENTE *f, HISTORY *h);
 
 
 

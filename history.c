@@ -402,7 +402,36 @@ void estVideFile(FILEATTENTE *f)
 
 
 
+void basculerFileVersHistorique(FILEATTENTE *f, HISTORY *h) 
+{
+    if (f->debut == NULL) 
+    {
+        printf("\033[1;31m❌ La file d'attente est vide.\033[0m\n");
+        return;
+    }
 
+    // Récupérer la première page de la file
+    FILEPAGE *temp = f->debut;
+    f->debut = f->debut->next;
+
+    if (f->debut == NULL) 
+    {
+        f->fin = NULL;
+    }
+
+    // Ajouter la page à l'historique
+    PAGE *newPage = malloc(sizeof(PAGE));
+    newPage->url = malloc(strlen(temp->url) + 1);
+    strcpy(newPage->url, temp->url);
+    newPage->previous = h->sommet;
+    h->sommet = newPage;
+
+    printf("\033[1;32m✅ La page '%s' a été déplacée vers l'historique.\033[0m\n", temp->url);
+
+    // Libérer la mémoire de l'élément supprimé de la file
+    free(temp->url);
+    free(temp);
+}
 
 
 // ----------------------- Partie 5  - 1 ------------------------------
